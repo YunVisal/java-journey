@@ -1,3 +1,5 @@
 .idea/
 out/
 .claude/settings.local.json
+*.class
+*.iml
