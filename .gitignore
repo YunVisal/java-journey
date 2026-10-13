@@ -3,3 +3,5 @@ out/
 .claude/settings.local.json
 *.class
 *.iml
+
+.DS_Store
