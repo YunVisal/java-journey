@@ -1,3 +1,3 @@
-Current: Week 1, Thu
-Last done: Week 1, Wed (2026-10-13) — added remote `origin`, pushed with `git push -u origin main`; README.md with goal, phases as a task list, link to docs/curriculum.md, repo layout; renders on GitHub
-Struggled with: understanding what a remote is at first (needed concrete steps); learned that `-u` lets later pushes be just `git push`
+Current: Week 1, Fri
+Last done: Week 1, Thu (2026-10-13) — calculator CLI (+ − × ÷ %) on `feature/calc` with `Scanner`; divide/modulo by zero shows a message; fast-forward merged into `main`; practised a merge conflict on `conflict.txt` and resolved it with a merge commit; pushed
+Struggled with: didn't know what fast-forward meant (learned: Git just moves the label when `main` has no new commits); first conflict attempt merged cleanly because the branch's net change was zero vs the merge base; `AM` status = staged then edited again, so re-`git add` before committing; learned `double` / 0 gives Infinity/NaN instead of crashing
