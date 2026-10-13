@@ -1,3 +1,3 @@
-Current: Week 1, Wed
-Last done: Week 1, Tue (2026-10-13) — git repo with 5 commits; .gitignore covers .idea/, out/, *.class, *.iml, .DS_Store, .claude/settings.local.json; extra: untracked already-committed files with git rm --cached
-Struggled with: spotting tool-generated files (.iml, settings.local.json); learned .gitignore doesn't affect already-tracked files
+Current: Week 1, Thu
+Last done: Week 1, Wed (2026-10-13) — added remote `origin`, pushed with `git push -u origin main`; README.md with goal, phases as a task list, link to docs/curriculum.md, repo layout; renders on GitHub
+Struggled with: understanding what a remote is at first (needed concrete steps); learned that `-u` lets later pushes be just `git push`
