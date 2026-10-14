@@ -1,3 +1,3 @@
-Current: Week 1, Fri
-Last done: Week 1, Thu (2026-10-13) — calculator CLI (+ − × ÷ %) on `feature/calc` with `Scanner`; divide/modulo by zero shows a message; fast-forward merged into `main`; practised a merge conflict on `conflict.txt` and resolved it with a merge commit; pushed
-Struggled with: didn't know what fast-forward meant (learned: Git just moves the label when `main` has no new commits); first conflict attempt merged cleanly because the branch's net change was zero vs the merge base; `AM` status = staged then edited again, so re-`git add` before committing; learned `double` / 0 gives Infinity/NaN instead of crashing
+Current: Week 1, Sat
+Last done: Week 1, Fri (2026-10-14) — `sumToN` with an off-by-one bug (`i < n` stopped at 4, returned 10 instead of 15); found it only with the IntelliJ debugger (breakpoint, Step Over, Variables pane) and fixed it to `i <= n`; bonus: conditional breakpoint `i == 4` on the loop body; renamed class to `Sum` (PascalCase); pushed
+Struggled with: first thought starting `i` at 0 was the bug (adding 0 changes nothing, the real bug was the exit condition); conditional breakpoint on the `for` line gave "can't find variable i" because `i` doesn't exist yet there, so it has to go on a line inside the loop body
