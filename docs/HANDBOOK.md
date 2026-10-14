@@ -1,0 +1,253 @@
+# Java Journey Handbook
+
+What I've learned so far, written as a reference to come back to.
+One section per day, plus cheat sheets at the end.
+Examples are small and separate from my exercises.
+
+Covers: Week 1, Mon → Fri (2026-10-08 → 2026-10-14)
+
+---
+
+## Week 1 — Setup & Git
+
+### Mon — JDK, IntelliJ, `javac` / `java`
+
+**Big idea:** Java source (`.java`) is compiled to bytecode (`.class`), and the JVM runs the bytecode.
+
+```
+Greeter.java  --javac-->  Greeter.class  --java-->  runs on the JVM
+```
+
+**Running from the terminal**
+
+```bash
+cd src
+javac Greeter.java     # compile → creates Greeter.class
+java Greeter           # run — class name, no ".class"
+```
+
+**Rules to remember**
+- The file name must match the `public class` name: `public class Greeter` lives in `Greeter.java`.
+- The entry point is always `public static void main(String[] args)`.
+- Class names use PascalCase (`Greeter`, not `greeter`).
+
+**Project structure in IntelliJ:** code goes in `src/`, and IntelliJ puts compiled output in `out/`.
+For the first 12 weeks pick the plain **IntelliJ** build system, not Maven (Maven starts in week 13).
+
+**Dates (bonus I used):** `java.time.LocalDate` + `DateTimeFormatter`
+
+```java
+LocalDate d = LocalDate.of(2026, 1, 5);
+System.out.println(DateTimeFormatter.ofPattern("dd/MM/yyyy").format(d)); // 05/01/2026
+```
+
+Pattern letters: `yyyy` year, `MM` month number, `MMMM` month name, `dd` day, `EEEE` weekday name.
+
+**Lesson learned:** I picked Maven in the new-project wizard by mistake. Check the build system before clicking Create.
+
+---
+
+### Tue — Git basics & `.gitignore`
+
+**Big idea:** Git takes snapshots (commits) of your project. A file moves through three places:
+
+```
+working directory  --git add-->  staging area  --git commit-->  history
+```
+
+| Command | What it does |
+| --- | --- |
+| `git init` | Turn the current folder into a repo |
+| `git status` | What's changed, staged, untracked |
+| `git add <file>` / `git add .` | Stage changes |
+| `git commit -m "msg"` | Save a snapshot of what's staged |
+| `git log --oneline` | Show history, one line per commit |
+| `git rm --cached <file>` | Stop tracking a file but keep it on disk |
+
+**`.gitignore`** lists files Git should not track. Ignore anything a tool *generates*:
+
+```
+out/          # compiled output
+*.class       # bytecode
+.idea/        # IntelliJ settings
+*.iml         # IntelliJ module files
+.DS_Store     # macOS Finder junk
+```
+
+**Lesson learned:** `.gitignore` only affects *untracked* files. If a file was already committed, adding it to `.gitignore` does nothing until you run `git rm --cached <file>` and commit.
+
+**How to spot generated files:** ask "did I type this, or did a tool create it?" If a tool created it and can recreate it, ignore it.
+
+**Commit message style:** `week01: add Calculator` — folder, colon, verb in the present tense.
+
+---
+
+### Wed — GitHub, remotes, push, Markdown
+
+**Big idea:** a *remote* is just a named URL pointing at another copy of your repo (e.g. on GitHub). `origin` is the usual name for it.
+
+```bash
+git remote add origin https://github.com/<user>/<repo>.git
+git remote -v                 # list remotes
+git push -u origin main       # first push
+git push                      # every push after that
+```
+
+`-u` (upstream) remembers "my `main` goes to `origin/main`", so later you can type just `git push`.
+
+**Markdown basics** (used for README files)
+
+```markdown
+# Heading 1
+## Heading 2
+**bold**, *italic*, `inline code`
+- bullet
+- [ ] task list item
+- [x] done item
+[link text](docs/file.md)
+```
+
+---
+
+### Thu — Branches, merge, merge conflicts (+ `Scanner`, `switch`)
+
+**Big idea:** a branch is a movable label pointing at a commit. You work on a branch, then merge it back.
+
+```bash
+git switch -c feature/x     # create + switch (older: git checkout -b)
+git switch main
+git merge feature/x
+git branch                  # list branches
+```
+
+**Fast-forward merge:** if `main` has no new commits since the branch started, Git just moves the `main` label forward. No merge commit is created.
+
+```
+before:  main → A ← feature/x is at C (A—B—C)
+after:   main → C
+```
+
+**Merge commit:** if both branches have new commits, Git creates a new commit with two parents.
+
+**Merge conflict:** both branches changed the same lines differently. Git marks the file:
+
+```
+<<<<<<< HEAD
+color = blue
+=======
+color = red
+>>>>>>> feature/x
+```
+
+To resolve: edit the file to the version you want, delete the markers, then `git add` the file and `git commit`.
+
+**Lessons learned**
+- My first conflict attempt merged cleanly. Git compares each side to the *merge base* (the common ancestor), and my branch's net change was zero, so there was nothing to conflict with.
+- `AM` in `git status --short` = **A**dded (staged) and then **M**odified again. The second edit isn't staged yet, so run `git add` again before committing.
+
+**Java bits from the calculator**
+
+Reading input with `Scanner`:
+
+```java
+Scanner in = new Scanner(System.in);
+System.out.print("Name: ");
+String name = in.nextLine();
+int age = Integer.parseInt(in.nextLine());   // read a line, then convert
+```
+
+`switch` on a String (classic form — don't forget `break`):
+
+```java
+switch (day) {
+    case "SAT":
+    case "SUN":
+        System.out.println("weekend");
+        break;
+    default:
+        System.out.println("weekday");
+}
+```
+
+Formatted output: `System.out.printf("%.2f%n", 3.14159);` → `3.14` (`%n` = newline).
+
+**Division by zero:**
+- `int`: `5 / 0` throws `ArithmeticException` (crash).
+- `double`: `5.0 / 0` gives `Infinity`, `0.0 / 0` gives `NaN`. No crash, but a meaningless answer, so check for 0 yourself.
+
+---
+
+### Fri — The debugger
+
+**Big idea:** instead of adding `println` everywhere, pause the program and look at the variables.
+
+| Tool | What it does |
+| --- | --- |
+| Breakpoint | Click in the gutter; the program pauses *before* that line runs |
+| Debug (bug icon) | Run with breakpoints active (Run ▶ ignores them) |
+| Step Over (F8) | Run the current line, stop at the next one |
+| Step Into (F7) | Go inside the method being called |
+| Step Out (⇧F8) | Finish the current method, go back to the caller |
+| Resume (⌥⌘R) | Run until the next breakpoint |
+| Variables pane | Current values of every local variable |
+| Watches | Expressions you want to track, e.g. `total * 2` |
+| Conditional breakpoint | Right-click a breakpoint → condition, e.g. `i == 99`; pauses only when true |
+
+**Off-by-one bugs:** a loop that runs one time too many or too few. Check the boundaries.
+
+```java
+for (int i = 0; i < 3; i++)   // i = 0, 1, 2   → 3 times
+for (int i = 1; i <= 3; i++)  // i = 1, 2, 3   → 3 times
+for (int i = 1; i < 3; i++)   // i = 1, 2      → only 2 times!
+```
+
+**Lessons learned**
+- Look at the *exit condition* first. Changing where `i` starts didn't matter (adding 0 changes nothing); the bug was where the loop stopped.
+- A conditional breakpoint on the `for (...)` line can't see `i`, because `i` doesn't exist yet when that line is first reached. Put it on a line **inside** the loop body.
+
+---
+
+## Cheat sheets
+
+### Git
+
+```bash
+git status                     # always check first
+git add . && git commit -m "weekNN: verb something"
+git push
+git log --oneline --graph --all   # see branches and merges
+git switch -c feature/name     # new branch
+git merge feature/name         # merge into current branch
+git rm --cached file           # untrack, keep on disk
+```
+
+### Java so far
+
+| Thing | Example |
+| --- | --- |
+| Entry point | `public static void main(String[] args)` |
+| Print | `System.out.println(x);` / `System.out.printf("%d%n", n);` |
+| Read input | `new Scanner(System.in).nextLine()` |
+| Text → number | `Integer.parseInt("42")`, `Double.parseDouble("3.5")` |
+| Today's date | `LocalDate.now()` |
+| Format a date | `DateTimeFormatter.ofPattern("dd MMM yyyy").format(date)` |
+| Early exit from `main` | `return;` |
+
+### Naming
+
+- Classes: `PascalCase` → `BankAccount`
+- Methods and variables: `camelCase` → `sumToN`, `firstNumber`
+- Constants: `UPPER_SNAKE_CASE` → `MAX_BOOKS`
+- Branches: `feature/short-name`
+
+---
+
+## Mistakes I've made (so I don't repeat them)
+
+1. Picked Maven instead of the IntelliJ build system for a plain project.
+2. Committed `.class` and `.iml` files before setting up `.gitignore`.
+3. Thought `.gitignore` would untrack files that were already committed.
+4. Committed with `AM` status, forgetting the second edit wasn't staged.
+5. Blamed the loop's starting value when the bug was the exit condition.
+6. Put a conditional breakpoint on the `for` line, where the loop variable doesn't exist yet.
+7. Named a class in lowercase (`sum`) instead of PascalCase (`Sum`).

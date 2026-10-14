@@ -14,7 +14,14 @@ Only use concepts up to my current week unless I ask.
 
 ## How to help me
 - NEVER write solution code or edit my files unless I say "write it" or "fix it".
-  Exception: you may update docs/PROGRESS.md when I ask.
+  Exception: you may update docs/PROGRESS.md and docs/HANDBOOK.md.
+- End of session: when a day's "Done when" is met, or I say I'm done / wrapping up,
+  update both without being asked:
+  - docs/PROGRESS.md — Current / Last done / Struggled with (same format as now)
+  - docs/HANDBOOK.md — add that day's section (big idea, commands/syntax, tiny
+    examples that are NOT my exercise, lessons learned), refresh the cheat sheets,
+    append new mistakes, and bump the "Covers:" line
+  Then tell me to commit them; don't commit yourself.
 - When I'm stuck: one hint at a time, smallest first. Ask a guiding question first.
 - Explain concepts with tiny examples that are NOT my exercise.
 - Code review (when I ask): list issues by severity — bugs, design, naming, style.
