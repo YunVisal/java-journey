@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Sun (2026-10-08 → 2026-10-19)
+Covers: Week 1, Mon → Week 2, Mon (2026-10-08 → 2026-10-19)
 
 ---
 
@@ -283,6 +283,52 @@ cat .git/HEAD        # ref: refs/heads/main
 
 ---
 
+## Week 2 — Classes, Objects, Encapsulation
+
+### Mon — Class vs object, fields, methods, `new`
+
+**Big idea:** a **class** is a blueprint; an **object** is one thing built from it. One class, many objects, and each object has its own copy of the fields.
+
+```java
+class Dog {
+    String name;                        // field: data each object holds
+    int age;
+
+    String greet() {                    // method: behaviour that uses the fields
+        return name + " says woof";
+    }
+}
+
+Dog a = new Dog();                      // new → builds an object, gives back a reference
+a.name = "Rex";                         // dot = "this object's field"
+System.out.println(a.greet());          // Rex says woof
+```
+
+**A variable holds a reference, not the object**
+
+```java
+Dog c = a;          // no new → no new object; c and a point to the same dog
+c.name = "Max";     // a.name is now "Max" too
+```
+
+**Default values for fields:** `String` (any object) → `null`, `int` → `0`, `boolean` → `false`.
+
+**Printing an object without help:** `println(dog)` shows `Dog@1b6d3586`, which is the class name + `@` + the hash code in hex. It's not a guaranteed memory address. Fix it with a method that builds readable text (and on Thursday: `toString()`).
+
+**Return vs print:** a method that *returns* a `String` is more reusable than one that prints: the caller decides where it goes (console, menu, file).
+
+```java
+String.format("%s is %d years old", name, age)   // %s text, %d whole number
+```
+
+**One job per class:** the model class (`Dog`) describes the thing; a separate `Main` runs the program. `main` would *work* inside `Dog`, but it mixes two jobs.
+
+**Lessons learned**
+- `String` has a capital S because it's a class; `int` is a primitive.
+- Use a plain method first; `toString()` is the same idea with a special name Java calls for you.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -315,6 +361,10 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Array capacity | `a.length` (no brackets — it's a field, not a method) |
 | Loop over filled slots | `for (int i = 0; i < size; i++)` |
 | Repeat until quit | `while (running) { ... }` + set `running = false` |
+| Create an object | `Dog d = new Dog();` |
+| Set / read a field | `d.name = "Rex";` / `d.name` |
+| Method returning text | `String greet() { return "hi " + name; }` |
+| Build formatted text | `String.format("%s (%d)", name, age)` |
 
 ### Naming
 
@@ -338,3 +388,4 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 9. Wrote `if(` / `for(` without a space; the convention is `if (` / `for (`.
 10. Called a branch a "copy" of the repo; it's a pointer to a commit.
 11. Said a merge always makes a merge commit; a fast-forward just moves the label.
+12. Said `println(obj)` prints the memory address; it's `ClassName@hashCodeInHex`.
