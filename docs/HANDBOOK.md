@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Fri (2026-10-08 → 2026-10-14)
+Covers: Week 1, Mon → Sat (2026-10-08 → 2026-10-19)
 
 ---
 
@@ -207,6 +207,52 @@ for (int i = 1; i < 3; i++)   // i = 1, 2      → only 2 times!
 
 ---
 
+### Sat — LibraryHub v0.1: menu loop + array storage
+
+**Big idea:** a fixed-size array has a **capacity** (how many slots exist) and a **count** (how many slots you've filled). Java tracks the capacity for you (`arr.length`); you track the count yourself with one counter.
+
+```java
+String[] names = new String[5];   // capacity 5, every slot starts as null
+int size = 0;                     // count — also the next free index
+
+names[size] = "Ana";  size++;     // slot 0, size = 1
+names[size] = "Bo";   size++;     // slot 1, size = 2
+
+if (size >= names.length) { /* full — refuse instead of crashing */ }
+
+for (int i = 0; i < size; i++) {             // loop to size, not length
+    System.out.println((i + 1) + ". " + names[i]);   // humans count from 1
+}
+```
+
+Writing past the last slot (`names[5]`) throws `ArrayIndexOutOfBoundsException`, so always check before adding.
+
+**Menu loop pattern:** repeat until the user chooses to stop. The number of rounds isn't known in advance, so use `while`.
+
+```java
+boolean running = true;
+while (running) {
+    // show menu, read choice
+    switch (choice) {
+        case 1: /* ... */ break;
+        case 9: running = false; break;
+        default: System.out.println("Unknown option");
+    }
+}
+```
+
+Alternative: `while (true)` plus `break` (note: inside a `switch`, `break` leaves only the `switch`, not the loop, which is one reason the flag version reads more clearly).
+
+**Making an existing folder an IntelliJ module:** File → New → Module → Java. Set **Location** to the *parent* folder and **Name** to the folder name; check the full path preview before Create. Setting Location to the folder itself gives a nested `name/name/`.
+
+**Lessons learned**
+- Don't build what you already have: the add-counter already *is* the count, so no "count the non-null slots" function is needed. This is how `ArrayList` works inside (an array plus a size).
+- Use `arr.length` instead of repeating a magic number like `100`.
+- When a task is unclear ("list books"), sketch the expected console output first.
+- Still open: `Integer.parseInt` crashes on letters or an empty line (fix in Week 6, exceptions).
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -232,6 +278,10 @@ git rm --cached file           # untrack, keep on disk
 | Today's date | `LocalDate.now()` |
 | Format a date | `DateTimeFormatter.ofPattern("dd MMM yyyy").format(date)` |
 | Early exit from `main` | `return;` |
+| New array | `String[] a = new String[100];` (slots start as `null`) |
+| Array capacity | `a.length` (no brackets — it's a field, not a method) |
+| Loop over filled slots | `for (int i = 0; i < size; i++)` |
+| Repeat until quit | `while (running) { ... }` + set `running = false` |
 
 ### Naming
 
@@ -251,3 +301,5 @@ git rm --cached file           # untrack, keep on disk
 5. Blamed the loop's starting value when the bug was the exit condition.
 6. Put a conditional breakpoint on the `for` line, where the loop variable doesn't exist yet.
 7. Named a class in lowercase (`sum`) instead of PascalCase (`Sum`).
+8. Planned a separate "count non-null slots" function when my add-counter already was the count.
+9. Wrote `if(` / `for(` without a space; the convention is `if (` / `for (`.
