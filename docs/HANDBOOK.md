@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Sat (2026-10-08 → 2026-10-19)
+Covers: Week 1, Mon → Sun (2026-10-08 → 2026-10-19)
 
 ---
 
@@ -253,6 +253,36 @@ Alternative: `while (true)` plus `break` (note: inside a `switch`, `break` leave
 
 ---
 
+### Sun — Review: explaining Git branching
+
+**Big idea:** a branch is a cheap, movable **pointer to a commit**, not a copy of the code. Branches share history; only the label differs.
+
+```
+A ← B ← C        main
+         ↖
+          D ← E  feature/login     ← this label moved C → D → E as I committed
+```
+
+**`HEAD`** is a pointer to the branch you're on: `HEAD → branch → commit`. When you commit, the branch that HEAD points to moves forward. `git switch` moves HEAD.
+
+```bash
+cat .git/HEAD        # ref: refs/heads/main
+```
+
+**Merging, two cases**
+- `main` didn't move since branching → **fast-forward**: the `main` label slides up, no new commit.
+- `main` has its own new commits → **merge commit** with two parents.
+- Both sides changed the same lines → **conflict**: fix by hand, `git add`, `git commit`.
+
+**How to explain it in an interview:** short sentences, say "I", use something you actually built ("I made `feature/calc`, committed there, `main` stayed clean, then merged — it was a fast-forward"). A memorised, too-perfect answer sounds scripted.
+
+**Lessons learned**
+- "Copy" is the wrong word for a branch: creating one only writes down a commit ID.
+- Not every merge creates a merge commit. Say "`main` moves forward to include the work" to cover both cases.
+- `LEARNING.md` now has a weekly template: copy the `## Week N` block each Sunday.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -265,7 +295,10 @@ git log --oneline --graph --all   # see branches and merges
 git switch -c feature/name     # new branch
 git merge feature/name         # merge into current branch
 git rm --cached file           # untrack, keep on disk
+cat .git/HEAD                  # which branch HEAD points to
 ```
+
+Branch = pointer to a commit · HEAD = pointer to the current branch · merge = fast-forward (no new commit) or merge commit (two parents)
 
 ### Java so far
 
@@ -303,3 +336,5 @@ git rm --cached file           # untrack, keep on disk
 7. Named a class in lowercase (`sum`) instead of PascalCase (`Sum`).
 8. Planned a separate "count non-null slots" function when my add-counter already was the count.
 9. Wrote `if(` / `for(` without a space; the convention is `if (` / `for (`.
+10. Called a branch a "copy" of the repo; it's a pointer to a commit.
+11. Said a merge always makes a merge commit; a fast-forward just moves the label.
