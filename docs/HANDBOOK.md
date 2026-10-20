@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Mon (2026-10-08 → 2026-10-19)
+Covers: Week 1, Mon → Week 2, Tue (2026-10-08 → 2026-10-20)
 
 ---
 
@@ -329,6 +329,59 @@ String.format("%s is %d years old", name, age)   // %s text, %d whole number
 
 ---
 
+### Tue — Constructors, overloading, `this`
+
+**Big idea:** a **constructor** runs once, when `new` builds the object, and sets up its starting state. It has the class's name and **no return type** (not even `void`).
+
+**Overloading:** several constructors (or methods) with the same name but different parameter lists. Java picks the one whose parameters match the call.
+
+```java
+public class Dog {
+    private String name;
+    private int age;
+
+    public Dog(String name, int age) {   // the "full" constructor does the real work
+        this.name = name;                // this.name = the field, name = the parameter
+        this.age = age;
+    }
+
+    public Dog(String name) {            // shorter version delegates to the full one
+        this(name, 0);
+    }
+}
+
+new Dog("Rex");       // calls Dog(String)        → age 0
+new Dog("Rex", 3);    // calls Dog(String, int)   → age 3
+```
+
+**Two jobs of `this`**
+- `this.field`: "the field of this object." You need it when a parameter has the same name (`name = name;` just assigns the parameter to itself).
+- `this(...)`: "call another constructor of this class." It keeps the setup logic in **one place** (no copy-pasted assignments).
+
+**No constructor written?** Java gives you an empty no-arg one for free. Once you write *any* constructor, that free one disappears.
+
+**Java 25: flexible constructor bodies.** Statements may come *before* `this(...)` / `super(...)`, but they can't use `this` or the object's fields, because the object isn't set up yet. Main use: checking arguments before delegating.
+
+```java
+public Dog(String name) {
+    System.out.println("making a dog");   // ✅ ok
+    // System.out.println(this.name);     // ❌ compile error
+    this(name, 0);
+}
+```
+
+**Money formatting:** `String.format("%.2f", 3.5)` → `3.50` (two decimals).
+
+**`ClassNotFoundException: Main` when the code is fine:** the JVM can't find a compiled `Main.class`, which means the run setup is wrong (wrong module, module not compiled, stale run configuration after a rename). Check how you're running it before changing the code.
+
+**Lessons learned**
+- Delegating with `this(...)` beats copying assignments: if a rule changes, you change one constructor.
+- A runtime "class not found" error is about the build/run setup, not your Java.
+- IntelliJ's Rename can also edit text in other files (docs, comments). Read the preview before confirming.
+- A constructor that accepts anything (e.g. a negative starting balance) "works" but lets the object start in an invalid state.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -365,6 +418,10 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Set / read a field | `d.name = "Rex";` / `d.name` |
 | Method returning text | `String greet() { return "hi " + name; }` |
 | Build formatted text | `String.format("%s (%d)", name, age)` |
+| Two decimals | `String.format("%.2f", 3.5)` → `3.50` |
+| Constructor | `public Dog(String name) { this.name = name; }` (no return type) |
+| Call another constructor | `this(name, 0);` |
+| Field vs parameter | `this.name = name;` |
 
 ### Naming
 
@@ -389,3 +446,5 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 10. Called a branch a "copy" of the repo; it's a pointer to a commit.
 11. Said a merge always makes a merge commit; a fast-forward just moves the label.
 12. Said `println(obj)` prints the memory address; it's `ClassName@hashCodeInHex`.
+13. Blamed the code for `ClassNotFoundException: Main` when the IntelliJ module/run setup was broken.
+14. Left an experiment line (`println("hi")`) in real code; delete experiments once you've seen the result.
