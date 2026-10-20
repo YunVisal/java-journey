@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Tue (2026-10-08 → 2026-10-20)
+Covers: Week 1, Mon → Week 2, Wed (2026-10-08 → 2026-10-20)
 
 ---
 
@@ -382,6 +382,66 @@ public Dog(String name) {
 
 ---
 
+### Wed — `private`, getters / setters, encapsulation
+
+**Big idea:** **encapsulation** = the class guards its own data. Fields are `private`; the outside world changes them only through methods that enforce the rules. If there's a way around the rules, the rules don't exist.
+
+```java
+public class Thermostat {
+    private int target;                      // nobody outside can touch it directly
+
+    public int getTarget() {                 // getter: read access
+        return target;
+    }
+
+    public boolean setTarget(int degrees) {  // the only way in, and it checks
+        if (degrees < 10 || degrees > 30) {
+            return false;                    // rejected: state unchanged
+        }
+        target = degrees;
+        return true;
+    }
+}
+```
+
+**Getter yes, setter maybe.** Don't add a setter by reflex. Ask "should anyone be allowed to set this to *any* value?" For a counter, a balance or a stock level, the answer is no: offer meaningful operations (`increment`, `deposit`, `restock`) instead of `setX`.
+
+**Reporting failure: `boolean` return vs exception**
+
+| | `return false` | `throw new IllegalArgumentException(...)` |
+| --- | --- | --- |
+| Caller must... | check the result | catch it, or the program stops |
+| If ignored | silently nothing happens | crash with a message |
+| Good for | expected "no" answers (not enough stock) | programming errors, bad input that should never happen |
+
+```java
+if (!thermo.setTarget(50)) {
+    System.out.println("Out of range");
+}
+```
+
+**Constructors can't return `false`**, so for bad constructor arguments the choices are: silently fix the value (e.g. clamp to 0) or **fail fast** by throwing. Failing fast is usually better: a silent fix hides a bug (a typo of `-500` for `500` goes unnoticed until much later).
+
+```java
+public Thermostat(int target) {
+    if (target < 10 || target > 30) {
+        throw new IllegalArgumentException("target out of range: " + target);
+    }
+    this.target = target;                    // check first, then assign
+}
+```
+
+Put the check in the "full" constructor only: the shorter constructors delegate with `this(...)` and are covered automatically.
+
+**Boundaries matter:** decide whether the edge value is allowed, then pick the operator. "Reject if more than the balance" is `amount > balance`, so withdrawing exactly the balance succeeds. `>=` there would be an off-by-one.
+
+**Lessons learned**
+- I listed every failure case (negative, zero, too large) *before* writing the method. Code then followed the list.
+- Validate the same rule everywhere state can change: `deposit`, `withdraw` **and** the constructor.
+- `0` can be valid in one place (opening balance) and invalid in another (deposit amount). Check each rule separately.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -422,6 +482,12 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Constructor | `public Dog(String name) { this.name = name; }` (no return type) |
 | Call another constructor | `this(name, 0);` |
 | Field vs parameter | `this.name = name;` |
+| Hide a field | `private int count;` |
+| Getter | `public int getCount() { return count; }` |
+| Report success / failure | `public boolean tryX(...) { if (bad) return false; ...; return true; }` |
+| Reject bad input loudly | `throw new IllegalArgumentException("why");` |
+| Catch it | `try { ... } catch (IllegalArgumentException e) { println(e.getMessage()); }` |
+| `if` / `else` layout | `} else {` on one line |
 
 ### Naming
 
@@ -448,3 +514,5 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 12. Said `println(obj)` prints the memory address; it's `ClassName@hashCodeInHex`.
 13. Blamed the code for `ClassNotFoundException: Main` when the IntelliJ module/run setup was broken.
 14. Left an experiment line (`println("hi")`) in real code; delete experiments once you've seen the result.
+15. Threw an exception when the task asked for `return false`; reread the "Done when" before choosing how to report failure.
+16. Put `else` on its own line after `}`; the convention is `} else {`.
