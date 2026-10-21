@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Thu (2026-10-08 → 2026-10-21)
+Covers: Week 1, Mon → Week 2, Fri (2026-10-08 → 2026-10-21)
 
 ---
 
@@ -502,6 +502,56 @@ System.out.println(t);   // Ticket #501
 
 ---
 
+### Fri — Packages, imports, the 4 access levels
+
+**Big idea:** a **package** groups related classes and gives them a namespace. The `package` line at the top of a file must match its folder under `src/`.
+
+```
+src/zoo/animals/Cat.java   →  package zoo.animals;
+src/zoo/app/ZooApp.java    →  package zoo.app;
+```
+
+**Imports:** you need one to use a class from a **different** package. Classes in the same package (and `java.lang`, e.g. `String`, `Math`) need no import.
+
+```java
+package zoo.app;
+
+import zoo.animals.Cat;   // full name: package + class
+```
+
+**The 4 access levels** (from most open to most closed)
+
+| Keyword | Same class | Same package | Subclass (other package) | Everywhere |
+| --- | --- | --- | --- | --- |
+| `public` | ✅ | ✅ | ✅ | ✅ |
+| `protected` | ✅ | ✅ | ✅ | ❌ |
+| *(none)* package-private | ✅ | ✅ | ❌ | ❌ |
+| `private` | ✅ | ❌ | ❌ | ❌ |
+
+```java
+package zoo.animals;
+
+public class Cat {
+    String nickname;                       // package-private: only zoo.animals sees it
+    private int lives = 9;                 // only Cat sees it
+    public String getName() { return "Tom"; }   // anyone
+}
+```
+
+**Subpackages are separate packages.** `zoo.animals.big` can't see package-private members of `zoo.animals`. The dots only look like nesting.
+
+**Moving classes into packages breaks hidden access.** While everything sits in the default package, a missing keyword still works. Once the caller moves to another package, every package-private constructor or method becomes a compile error: `... is not public in ...; cannot be accessed from outside package`.
+
+**IntelliJ:** right-click `src` → New → Package, then drag files in. It rewrites the `package` lines and adds imports for you.
+
+**Rule of thumb:** start everything `private`, then open up only what another class really needs. Model classes go in `.model`, the runner in `.app`.
+
+**Lessons learned**
+- Predict the compile error before running: if it compiles first time, know *why* (here: the API was already `public`).
+- A helper that only its own class calls can be `private`, which is tighter than package-private.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -552,6 +602,9 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Call a static method | `Math.max(a, b)` (class name, no object) |
 | Bump then use / use then bump | `++n` / `n++` |
 | Readable printing | `@Override public String toString() { return ...; }` |
+| Declare a package | `package bank.model;` (first line; matches `src/bank/model/`) |
+| Use a class from another package | `import bank.model.BankAccount;` |
+| Access levels, open → closed | `public` → `protected` → *(none)* → `private` |
 
 ### Naming
 

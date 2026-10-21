@@ -1,3 +1,7 @@
+package bank.app;
+
+import bank.model.BankAccount;
+
 public class Main {
     public static void main(String[] args) {
         BankAccount bankAccount1 = new BankAccount("John Doe");

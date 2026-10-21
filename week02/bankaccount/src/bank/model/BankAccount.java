@@ -1,3 +1,5 @@
+package bank.model;
+
 public class BankAccount {
     private static int bankAccountNextNumber = 1001;
 
