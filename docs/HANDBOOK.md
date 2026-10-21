@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Wed (2026-10-08 → 2026-10-20)
+Covers: Week 1, Mon → Week 2, Thu (2026-10-08 → 2026-10-21)
 
 ---
 
@@ -442,6 +442,66 @@ Put the check in the "full" constructor only: the shorter constructors delegate 
 
 ---
 
+### Thu — `static` fields and methods, `toString()`
+
+**Big idea:** a normal field belongs to **each object**; a `static` field belongs to **the class**, so there is exactly one copy shared by every object.
+
+```java
+public class Ticket {
+    private static int lastIssued = 500;   // one copy, shared by all tickets
+    private int number;                    // one per ticket
+
+    public Ticket() {
+        lastIssued++;                      // bump the shared counter...
+        this.number = lastIssued;          // ...and copy it into this object
+    }
+}
+
+new Ticket();   // number 501
+new Ticket();   // number 502
+```
+
+| | Instance field | `static` field |
+| --- | --- | --- |
+| How many copies | one per object | one for the whole class |
+| Accessed as | `obj.field` / `this.field` | `ClassName.field` |
+| Typical use | this object's data (name, balance) | counters, shared constants |
+
+**`static` methods** belong to the class too: call them as `Math.max(a, b)`, no object needed. They can't use `this` or instance fields, because there is no "this object".
+
+**Increment-then-assign vs assign-then-increment:** both work, but the starting value has to match.
+
+```java
+static int next = 501;   this.number = next++;   // hand out, then bump
+static int last = 500;   this.number = ++last;   // bump, then hand out
+```
+
+Name the counter for what it actually holds: `next...` if it's the number to give out *next*, `last...` if it's the one *already given out*.
+
+**Where to put once-per-object logic:** in the constructor that does **not** call `this(...)`. Every other constructor delegates there, so each object passes through it exactly once.
+
+**Order matters:** validate (and maybe `throw`) **before** touching the shared counter. Otherwise a failed `new` uses up a number and leaves a gap.
+
+**`toString()`:** every class inherits it from `Object` (default: `ClassName@hashInHex`). Override it and `println(obj)` and `"text " + obj` call yours automatically.
+
+```java
+@Override
+public String toString() {
+    return String.format("Ticket #%d", number);
+}
+
+System.out.println(t);   // Ticket #501
+```
+
+`@Override` asks the compiler to check that you really are overriding. A typo like `tostring()` then becomes a compile error instead of a silent new method.
+
+**Lessons learned**
+- Once `toString()` exists, a separate `describe()` doing the same job is duplication. Keep one.
+- A getter's name should say what it returns: `getAccountNumber()` returns a number; `getAccount()` sounds like it returns an account.
+- Test every path: with two constructors, create objects with **both** to prove each gets numbered.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -488,6 +548,10 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Reject bad input loudly | `throw new IllegalArgumentException("why");` |
 | Catch it | `try { ... } catch (IllegalArgumentException e) { println(e.getMessage()); }` |
 | `if` / `else` layout | `} else {` on one line |
+| Shared by all objects | `private static int count = 0;` |
+| Call a static method | `Math.max(a, b)` (class name, no object) |
+| Bump then use / use then bump | `++n` / `n++` |
+| Readable printing | `@Override public String toString() { return ...; }` |
 
 ### Naming
 
@@ -516,3 +580,6 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 14. Left an experiment line (`println("hi")`) in real code; delete experiments once you've seen the result.
 15. Threw an exception when the task asked for `return false`; reread the "Done when" before choosing how to report failure.
 16. Put `else` on its own line after `}`; the convention is `} else {`.
+17. Named a getter `getBankAccount()` when it returned an `int` number; the name should match what comes back.
+18. Called a counter `...NextNumber` when it held the last number already given out.
+19. Tested only one of two constructors; test every path that should behave the same.
