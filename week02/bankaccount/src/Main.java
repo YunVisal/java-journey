@@ -1,7 +1,7 @@
 public class Main {
     public static void main(String[] args) {
         BankAccount bankAccount1 = new BankAccount("John Doe");
-        System.out.println(bankAccount1.describe());
+        System.out.println(bankAccount1);
 
         deposit(bankAccount1, 10.0);
         System.out.println(bankAccount1.getBalance());
@@ -21,12 +21,11 @@ public class Main {
         withdraw(bankAccount1, 9);
         System.out.println(bankAccount1.getBalance());
 
-        try {
-            BankAccount bankAccount2 = new BankAccount("Bob", -5000);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
+        BankAccount bankAccount2 = new BankAccount("Bob");
+        System.out.println(bankAccount2);
 
+        BankAccount bankAccount3 = new BankAccount("Mary", 50);
+        System.out.println(bankAccount3);
     }
 
     static void deposit(BankAccount bankAccount, double amount) {
