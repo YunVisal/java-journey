@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Sat (2026-10-08 → 2026-10-22)
+Covers: Week 1, Mon → Week 2, Sun (2026-10-08 → 2026-10-22)
 
 ---
 
@@ -595,6 +595,44 @@ switch (x) {
 
 ---
 
+### Sun — Review: explaining encapsulation
+
+**Big idea:** encapsulation = keep an object's **data** and the **methods that guard it** together, and block direct access to the data. Then the object's rules (its *invariants*, like "the level is never negative") can't be broken from outside.
+
+```java
+public class FuelTank {
+    private double litres;                  // 1. the data is private
+
+    public boolean refuel(double amount) {  // 2. the only doors in check the rules
+        if (amount <= 0) return false;
+        litres += amount;
+        return true;
+    }
+
+    public double getLitres() {             // 3. read access, but no setLitres()
+        return litres;
+    }
+}
+
+// tank.litres = -40;   ❌ won't compile, so the rule "never negative" always holds
+```
+
+**Encapsulation vs abstraction** (easy to mix up in interviews)
+
+| | Encapsulation | Abstraction |
+| --- | --- | --- |
+| Question it answers | "Who may change this data, and how?" | "What does the caller need to know?" |
+| Tool in Java | `private` fields + guarding methods | interfaces, abstract classes (Week 4) |
+| One-liner | protects the state | hides the complexity |
+
+**Interview shape (2 minutes):** *what* (one sentence) → *how* in my code (name the field and the methods) → *why* (what breaks without it) → optional bonus (getter yes, setter no).
+
+**Lessons learned**
+- "Hides implementation details" is the textbook line for abstraction. For encapsulation, say "protects the data so the rules always hold".
+- The strongest part of an answer is the concrete risk: "if `balance` were public, `deposit`'s validation could be skipped".
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -652,6 +690,7 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Contains, ignoring case | `a.toLowerCase(Locale.ROOT).contains(b.toLowerCase(Locale.ROOT))` |
 | Equal, ignoring case | `a.equalsIgnoreCase(b)` |
 | End every `case` | `break;` (otherwise it falls through) |
+| Encapsulation recipe | `private` field + getter + rule-checking methods, no blind setter |
 
 ### Naming
 
@@ -684,3 +723,4 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 18. Called a counter `...NextNumber` when it held the last number already given out.
 19. Tested only one of two constructors; test every path that should behave the same.
 20. Forgot `break` at the end of a `case`, so a search fell through into Exit and quit the app.
+21. Defined encapsulation as "hiding implementation details"; that's abstraction. Encapsulation protects the data so the rules always hold.
