@@ -1,8 +1,9 @@
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        String[] books = new String[100];
+        Book[] books = new Book[100];
         int bookCursor = 0;
 
         Scanner scanner = new Scanner(System.in);
@@ -13,7 +14,8 @@ public class Main {
         while (isRunning) {
             System.out.println("1. Add book");
             System.out.println("2. List books");
-            System.out.println("3. Exit");
+            System.out.println("3. Find by title");
+            System.out.println("4. Exit");
 
             System.out.print("Enter option: ");
             int option = Integer.parseInt(scanner.nextLine());
@@ -23,9 +25,17 @@ public class Main {
                         System.out.println("Cannot add more book");
                         break;
                     }
+
                     System.out.print("Enter book title: ");
                     String bookTitle = scanner.nextLine();
-                    books[bookCursor] = bookTitle;
+
+                    System.out.print("Enter author: ");
+                    String author = scanner.nextLine();
+
+                    System.out.print("Enter year: ");
+                    int year = Integer.parseInt(scanner.nextLine());
+
+                    books[bookCursor] = new Book(bookTitle, author, year);
                     bookCursor += 1;
                     break;
                 case 2:
@@ -34,10 +44,26 @@ public class Main {
                         break;
                     }
                     for(int i = 0; i < bookCursor; i++) {
-                        System.out.printf("%d. %s%n", i+1, books[i]);
+                        System.out.println(books[i]);
                     }
                     break;
                 case 3:
+                    System.out.print("Enter book title: ");
+                    String searchTitle = scanner.nextLine();
+                    System.out.println("==========");
+                    System.out.println("Search result:");
+                    int matchedTitle = 0;
+                    for(int i = 0; i < bookCursor; i++) {
+                        if(books[i].getTitle().toLowerCase(Locale.ROOT).contains(searchTitle.toLowerCase(Locale.ROOT))) {
+                            System.out.println(books[i]);
+                            matchedTitle += 1;
+                        }
+                    }
+                    if(matchedTitle == 0) {
+                        System.out.println("No book title matched!");
+                    }
+                    break;
+                case 4:
                     System.out.println("Bye bye!");
                     isRunning = false;
                     break;

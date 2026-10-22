@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Fri (2026-10-08 → 2026-10-21)
+Covers: Week 1, Mon → Week 2, Sat (2026-10-08 → 2026-10-22)
 
 ---
 
@@ -552,6 +552,49 @@ public class Cat {
 
 ---
 
+### Sat — LibraryHub v0.2: objects in an array, search by title
+
+**Big idea:** an array can hold objects, not just text or numbers. `Book[]` instead of `String[]` means each slot carries a whole record (id, title, author…), and the array's type stops you from putting anything else in.
+
+```java
+Song[] playlist = new Song[50];
+playlist[0] = new Song("Yesterday", 125);   // ✅ a Song
+playlist[1] = "Yesterday";                  // ❌ compile error: String is not a Song
+```
+
+**Constructor sets what the user shouldn't choose.** The id (from a static counter) and the starting status are set inside the constructor, not passed in. The caller only provides what it really knows.
+
+**Case-insensitive partial search:** lowercase **both** sides, then `contains`.
+
+```java
+String query = "yEsT";
+if (song.getTitle().toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT))) { ... }
+```
+
+- `contains` is case-sensitive on its own: `"Yesterday".contains("yest")` → `false`.
+- `Locale.ROOT` avoids language-specific surprises (e.g. Turkish `I` → `ı`).
+- Exact but case-insensitive match would be `a.equalsIgnoreCase(b)` instead.
+
+**"No results" pattern:** count matches inside the loop, and check the count after it.
+
+**`switch` fall-through:** without `break`, execution runs straight into the next `case`.
+
+```java
+switch (x) {
+    case 1: System.out.println("one");          // no break...
+    case 2: System.out.println("two"); break;   // ...so x = 1 prints both
+}
+```
+
+(Week 12's arrow form `case 1 -> ...` never falls through.)
+
+**Lessons learned**
+- A surprising default (`available = false`) is fine if it's deliberate. Write the reason as a comment so future-you doesn't "fix" it.
+- Decide exact vs partial match *before* coding. They need different methods.
+- Test the edge cases: no match, several matches, mixed case. Also check the menu comes back after each action.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -605,6 +648,10 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Declare a package | `package bank.model;` (first line; matches `src/bank/model/`) |
 | Use a class from another package | `import bank.model.BankAccount;` |
 | Access levels, open → closed | `public` → `protected` → *(none)* → `private` |
+| Array of objects | `Book[] books = new Book[100];` / `books[i] = new Book(...);` |
+| Contains, ignoring case | `a.toLowerCase(Locale.ROOT).contains(b.toLowerCase(Locale.ROOT))` |
+| Equal, ignoring case | `a.equalsIgnoreCase(b)` |
+| End every `case` | `break;` (otherwise it falls through) |
 
 ### Naming
 
@@ -636,3 +683,4 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 17. Named a getter `getBankAccount()` when it returned an `int` number; the name should match what comes back.
 18. Called a counter `...NextNumber` when it held the last number already given out.
 19. Tested only one of two constructors; test every path that should behave the same.
+20. Forgot `break` at the end of a `case`, so a search fell through into Exit and quit the app.
