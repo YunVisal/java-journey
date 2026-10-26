@@ -3,7 +3,7 @@ public class Employee {
     private double baseSalary;
 
     public Employee(String name, double baseSalary) {
-        if (name == null || name.isEmpty()) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name must not be empty");
         }
 
