@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 2, Sun (2026-10-08 → 2026-10-22)
+Covers: Week 1, Mon → Week 3, Mon (2026-10-08 → 2026-10-26)
 
 ---
 
@@ -633,6 +633,74 @@ public class FuelTank {
 
 ---
 
+## Week 3 — Inheritance & Polymorphism
+
+### Mon — `extends`, `super(...)`
+
+**Big idea:** `class Child extends Parent` means a child **is a** parent with extras. It inherits the parent's fields and methods, so it must **not** declare its own copies of them.
+
+```java
+public class Vehicle {
+    private String plate;
+    private int wheels;
+
+    public Vehicle(String plate, int wheels) {
+        this.plate = plate;
+        this.wheels = wheels;
+    }
+
+    public String getPlate() { return plate; }
+}
+
+public class Truck extends Vehicle {
+    public Truck(String plate) {
+        super(plate, 6);          // hand the values to Vehicle's constructor
+    }
+}
+
+new Truck("AB-123").getPlate();   // "AB-123": the getter is inherited
+```
+
+**`private` is inherited but not visible.** A `Truck` object *has* a `plate`, but `Truck`'s code can't write `this.plate = ...`. The only way to set it is through the parent: `super(...)`.
+
+**`super(...)` vs `this(...)`**
+
+| | `this(...)` | `super(...)` |
+| --- | --- | --- |
+| Calls | another constructor of **this** class | a constructor of the **parent** class |
+| Week | 2 Tue | 3 Mon |
+| Shared rule | it calls a constructor, and it's the first constructor call in the body | same |
+
+**The hidden `super()`.** If a constructor doesn't call `super(...)` or `this(...)` itself, Java inserts `super();`, which needs a **no-arg** parent constructor. A class with no constructor at all gets a free one: `public Truck() { super(); }`.
+
+```java
+public class Bus extends Vehicle { }
+// ❌ There is no default constructor available in 'Vehicle'
+//    (the free Bus() calls super(), but Vehicle only has Vehicle(String, int))
+```
+
+Ways to fix it: (1) the child calls `super(plate, wheels)` explicitly (the usual fix), or (2) the parent **adds** a no-arg constructor (overloading). Deleting the parent's real constructor also compiles, but then nobody can ever set `plate`.
+
+**Upcasting preview:** `Vehicle v = new Truck("AB-123");` is allowed, because a truck *is a* vehicle. More on Wednesday.
+
+**Lessons learned**
+- Reproducing the compile error on purpose (by commenting out the constructor) shows *why* the rule exists.
+- A fix that compiles isn't automatically a good fix: ask what it breaks.
+- Undo the experiment afterwards, like I did when I uncommented the constructor.
+- Validation in the **parent** constructor protects every subclass at once. A no-arg constructor that sets nothing would get around it, so don't add one "just to compile".
+
+**Bonus: `||` and `&&` short-circuit.** They stop as soon as the answer is known, so a null check on the left protects a method call on the right.
+
+```java
+String s = null;
+if (s == null || s.isBlank()) { ... }   // ✅ s.isBlank() never runs
+if (s.isBlank() || s == null) { ... }   // ❌ NullPointerException
+```
+
+`a || b` skips `b` when `a` is true; `a && b` skips `b` when `a` is false. `isEmpty()` → length 0 only; `isBlank()` → also true for `"   "`.
+
+---
+
 ## Cheat sheets
 
 ### Git
@@ -691,6 +759,10 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Equal, ignoring case | `a.equalsIgnoreCase(b)` |
 | End every `case` | `break;` (otherwise it falls through) |
 | Encapsulation recipe | `private` field + getter + rule-checking methods, no blind setter |
+| Subclass | `public class Truck extends Vehicle { ... }` (don't redeclare parent fields) |
+| Call the parent constructor | `super(plate, 6);` |
+| Parent-type variable | `Vehicle v = new Truck("AB-123");` |
+| Null-safe text check | `if (s == null \|\| s.isBlank())` (null check first) |
 
 ### Naming
 
@@ -724,3 +796,5 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 19. Tested only one of two constructors; test every path that should behave the same.
 20. Forgot `break` at the end of a `case`, so a search fell through into Exit and quit the app.
 21. Defined encapsulation as "hiding implementation details"; that's abstraction. Encapsulation protects the data so the rules always hold.
+22. To fix "no default constructor available in the parent", suggested removing the parent's constructor; that compiles but leaves no way to set the fields. Call `super(...)` (or add a no-arg constructor) instead.
+23. Thought `||` always evaluates both sides; it short-circuits, which is why `s == null || s.isBlank()` is safe.
