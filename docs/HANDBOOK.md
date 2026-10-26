@@ -798,3 +798,4 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 21. Defined encapsulation as "hiding implementation details"; that's abstraction. Encapsulation protects the data so the rules always hold.
 22. To fix "no default constructor available in the parent", suggested removing the parent's constructor; that compiles but leaves no way to set the fields. Call `super(...)` (or add a no-arg constructor) instead.
 23. Thought `||` always evaluates both sides; it short-circuits, which is why `s == null || s.isBlank()` is safe.
+24. Gave a follow-up commit the same message as the one before; each message should describe its own change (`week03: reject blank employee names`).
