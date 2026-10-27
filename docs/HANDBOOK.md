@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 3, Mon (2026-10-08 → 2026-10-26)
+Covers: Week 1, Mon → Week 3, Tue (2026-10-08 → 2026-10-27)
 
 ---
 
@@ -699,6 +699,77 @@ if (s.isBlank() || s == null) { ... }   // ❌ NullPointerException
 
 `a || b` skips `b` when `a` is true; `a && b` skips `b` when `a` is false. `isEmpty()` → length 0 only; `isBlank()` → also true for `"   "`.
 
+### Tue — Overriding, `@Override`
+
+**Big idea:** a subclass can **override** a parent method by declaring one with the **same signature** (name + parameter types). Then the child's version runs instead of the parent's.
+
+```java
+public class Shape {
+    public double area() { return 0; }
+}
+
+public class Square extends Shape {
+    private double side;
+    public Square(double side) { this.side = side; }
+
+    @Override
+    public double area() { return side * side; }
+}
+```
+
+**`@Override` doesn't do the overriding.** A method with a matching signature overrides even without the annotation. The annotation asks the compiler to *check* that you really override something:
+
+```java
+@Override
+public double areas() { ... }   // ❌ Method does not override method from its superclass
+```
+
+Without `@Override`, `areas()` would compile as a **new** method, and `area()` would quietly keep returning the parent's answer. Always write it.
+
+**Build on the parent with `super.method()`**
+
+```java
+public class Bonus extends Pay {
+    @Override
+    public double total() {
+        return super.total() + 100;   // the parent's result, plus extra
+    }
+}
+```
+
+`super(...)` (Mon) calls the parent **constructor**; `super.method()` calls the parent's **version of a method**.
+
+**Overriding vs overloading**
+
+| | Overloading (Week 2 Tue) | Overriding (today) |
+| --- | --- | --- |
+| Where | same class | parent → child |
+| Signature | different parameters | same parameters |
+| Decided at | compile time | run time, by the object's real type |
+
+**Percent shortcut:** `+10%` is `x * 1.1`; `+20%` is `x * 1.2`. Order matters when there is a flat bonus too: `x * 1.2 + bonus` ≠ `(x + bonus) * 1.2`.
+
+**Lessons learned**
+- If the parent returns a placeholder like `0`, every `super.method()` call in a child builds on `0`. Make the parent's version return something real (here, the base salary).
+- Trigger the compile error on purpose (misspell the name) to see what `@Override` protects you from.
+- An `Employee` variable holding an `Engineer` still runs `Engineer`'s `calculateSalary()`. That's polymorphism, which is tomorrow's topic.
+
+**Bonus: checks before `super(...)` (Java 25).** Since Java 25, a constructor may run statements *before* `super(...)`, as long as they don't use `this` (no fields, no instance methods). It's useful for failing fast on the child's own arguments:
+
+```java
+public Truck(String plate, int axles) {
+    if (axles < 2) {
+        throw new IllegalArgumentException("axles must be at least 2");
+    }
+    super(plate, axles * 2);
+    this.axles = axles;
+}
+```
+
+In Java 24 and older, this didn't compile, because `super(...)` had to be the very first line. You'll see the old style in most tutorials.
+
+**Named constants:** `private static final double TAX_RATE = 0.10;`. Use `static`, because one copy is shared by the whole class instead of one per object.
+
 ---
 
 ## Cheat sheets
@@ -763,6 +834,10 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Call the parent constructor | `super(plate, 6);` |
 | Parent-type variable | `Vehicle v = new Truck("AB-123");` |
 | Null-safe text check | `if (s == null \|\| s.isBlank())` (null check first) |
+| Override a parent method | `@Override public double area() { ... }` (same signature) |
+| Reuse the parent's version | `return super.total() + 100;` |
+| Add a percentage | `x * 1.1` (+10%) |
+| Named constant | `private static final double TAX_RATE = 0.10;` |
 
 ### Naming
 
@@ -799,3 +874,5 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 22. To fix "no default constructor available in the parent", suggested removing the parent's constructor; that compiles but leaves no way to set the fields. Call `super(...)` (or add a no-arg constructor) instead.
 23. Thought `||` always evaluates both sides; it short-circuits, which is why `s == null || s.isBlank()` is safe.
 24. Gave a follow-up commit the same message as the one before; each message should describe its own change (`week03: reject blank employee names`).
+25. Said `@Override` is what replaces the parent's method; overriding happens through the matching signature, and `@Override` only makes the compiler check it.
+26. Had the parent's `calculateSalary()` return `0` as a placeholder, so `super.calculateSalary() * 1.1` would also give `0`.
