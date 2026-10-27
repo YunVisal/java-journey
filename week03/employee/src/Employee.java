@@ -22,4 +22,8 @@ public class Employee {
     public double getBaseSalary() {
         return baseSalary;
     }
+
+    public double calculateSalary() {
+        return baseSalary;
+    }
 }
