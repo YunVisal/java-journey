@@ -4,7 +4,7 @@ What I've learned so far, written as a reference to come back to.
 One section per day, plus cheat sheets at the end.
 Examples are small and separate from my exercises.
 
-Covers: Week 1, Mon → Week 3, Tue (2026-10-08 → 2026-10-27)
+Covers: Week 1, Mon → Week 3, Wed (2026-10-08 → 2026-10-28)
 
 ---
 
@@ -770,6 +770,45 @@ In Java 24 and older, this didn't compile, because `super(...)` had to be the ve
 
 **Named constants:** `private static final double TAX_RATE = 0.10;`. Use `static`, because one copy is shared by the whole class instead of one per object.
 
+### Wed — Polymorphism, upcasting, dynamic dispatch
+
+**Big idea:** one parent-type variable can hold any subclass object, and calling an overridden method on it runs the **real object's** version. That means one loop can handle every type without asking "what are you?".
+
+**Upcasting:** storing a child object in a parent-type variable. It's automatic and always safe.
+
+```java
+Animal a = new Dog();          // upcast
+Animal[] zoo = { new Dog(), new Cat(), new Animal() };
+```
+
+**Dynamic dispatch:** two questions answered at two different times:
+
+| When | Question | Looks at |
+| --- | --- | --- |
+| Compile time | Is this call allowed? | the **variable's** type (`Animal` must have `speak()`) |
+| Run time | Which version runs? | the **object's** real type (`Dog.speak()`) |
+
+**One loop, no type checks**
+
+```java
+double totalWeight = 0;              // declared before the loop so it survives every pass
+for (Animal a : zoo) {
+    double w = a.weight();           // call once, reuse the result
+    System.out.printf("%s, %.1f%n", a.getName(), w);
+    totalWeight += w;
+}
+System.out.printf("Total: %.1f%n", totalWeight);
+```
+
+Adding a new subclass (`Parrot`) needs **no change** to this loop. That's the payoff: code written against the parent works for children that don't exist yet.
+
+**Running total pattern:** declare `total = 0` *before* the loop, `total += x` *inside*, print *after*.
+
+**Lessons learned**
+- My first version printed each salary but no total, and left out a plain parent object. Reread the Build and Done when columns before saying "done".
+- Include a plain parent object in the array too, so you can see that the parent's own version runs in the same loop.
+- Store a method result in a local variable when you need it twice, so the method doesn't run twice.
+
 ---
 
 ## Cheat sheets
@@ -838,6 +877,9 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 | Reuse the parent's version | `return super.total() + 100;` |
 | Add a percentage | `x * 1.1` (+10%) |
 | Named constant | `private static final double TAX_RATE = 0.10;` |
+| Array of mixed subtypes | `Animal[] zoo = { new Dog(), new Cat() };` |
+| Polymorphic loop | `for (Animal a : zoo) total += a.weight();` (no `instanceof`) |
+| Running total | `double total = 0;` before the loop, `total += x;` inside |
 
 ### Naming
 
@@ -876,3 +918,4 @@ Branch = pointer to a commit · HEAD = pointer to the current branch · merge = 
 24. Gave a follow-up commit the same message as the one before; each message should describe its own change (`week03: reject blank employee names`).
 25. Said `@Override` is what replaces the parent's method; overriding happens through the matching signature, and `@Override` only makes the compiler check it.
 26. Had the parent's `calculateSalary()` return `0` as a placeholder, so `super.calculateSalary() * 1.1` would also give `0`.
+27. Said "done" after printing each salary but never summing them; check every part of the Build column first.
